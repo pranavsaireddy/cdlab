@@ -2,7 +2,7 @@
 
 keywords = ["if","else","while","for","def","return","print","int","float"]
 operators = ['+','-','*','/','=','>','<']
-separators = ['(',')','{','}','[',']',':',',']
+special_symbols = ['(',')','{','}','[',']',':',',']
 
 file = open("sample.py","r")
 code = file.read()
@@ -17,11 +17,14 @@ for token in tokens:
     elif token in operators:
         print(token,"-> Operator")
 
-    elif token in separators:
-        print(token,"-> Separator")
+    elif token in special_symbols:
+        print(token,"-> Special Symbol")
 
     elif token.isdigit():
-        print(token,"-> Number")
+        print(token,"-> Literal")
+
+    elif token.startswith('"') or token.startswith("'"):
+        print(token,"-> String")
 
     else:
         print(token,"-> Identifier")
