@@ -4,24 +4,25 @@
 void yyerror(char *s);
 int yylex();
 %}
-
 %token NUMBER
-
+%left '+' '-'
+%left '*' '/'
 %%
-expr: expr '+' expr   { printf("Addition\n"); }
-    | expr '-' expr   { printf("Subtraction\n"); }
-    | expr '*' expr   { printf("Multiplication\n"); }
-    | expr '/' expr   { printf("Division\n"); }
-    | NUMBER
+input: expr { printf("Result = %d\n", $1); }
+     ;
+expr: expr '+' expr { $$ = $1 + $3; }
+    | expr '-' expr { $$ = $1 - $3; }
+    | expr '*' expr { $$ = $1 * $3; }
+    | expr '/' expr { $$ = $1 / $3; }
+    | '(' expr ')'  { $$ = $2; }
+    | NUMBER        { $$ = $1; }
     ;
 %%
-
-int main() {
+int main(){
     printf("Enter expression: ");
     yyparse();
     return 0;
 }
-
 void yyerror(char *s){
-    printf("Invalid expression\n");
+    printf("Invalid input\n");
 }
