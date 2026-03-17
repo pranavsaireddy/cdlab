@@ -1,58 +1,49 @@
-# Simple Lexical Analyzer
+code = input("Enter code: ")
+keywords = ["if", "else", "while", "do"]
+operators = ["==", "+", "-", "*", "/", "=", "<", ">"]
+i = 0
+n = len(code)
+while i < n:
+    if code[i].isspace():
+        i += 1
+        continue
+    # IDENTIFIER / KEYWORD (show transitions)
+    if code[i].isalpha():
+        lexeme = ""
 
-def lexical_analyzer(text):
-    state = 0
-    token = ""
+        while i < n and code[i].isalpha():
+            if lexeme != "":
+                print("{" + lexeme[-1] + "} -> {" + code[i] + "}")
+            lexeme += code[i]
+            i += 1
 
-    for ch in text + " ":   # add space to process last token
-        
-        # State 0 : Start state
-        if state == 0:
-            if ch.isalpha():
-                state = 1
-                token += ch
-                print("State 0 -> State 1 (Identifier start)")
-            
-            elif ch.isdigit():
-                state = 2
-                token += ch
-                print("State 0 -> State 2 (Number start)")
-            
-            elif ch in "+-*/=":
-                print("Operator:", ch)
-            
-            elif ch.isspace():
-                continue
+        if lexeme in keywords:
+            print("{" + lexeme + "} -> KEYWORD")
+        else:
+            print("{" + lexeme + "} -> IDENTIFIER")
+        continue
+    # NUMBER (digit transitions)
+    if code[i].isdigit():
+        num = ""
 
-        # State 1 : Identifier
-        elif state == 1:
-            if ch.isalnum():
-                token += ch
-            else:
-                print("Identifier:", token)
-                token = ""
-                state = 0
-                print("State 1 -> State 0")
-                
-                if not ch.isspace():
-                    if ch in "+-*/=":
-                        print("Operator:", ch)
+        while i < n and code[i].isdigit():
+            if num != "":
+                print("{" + num[-1] + "} -> {" + code[i] + "}")
+            num += code[i]
+            i += 1
 
-        # State 2 : Number
-        elif state == 2:
-            if ch.isdigit():
-                token += ch
-            else:
-                print("Number:", token)
-                token = ""
-                state = 0
-                print("State 2 -> State 0")
-                
-                if not ch.isspace():
-                    if ch in "+-*/=":
-                        print("Operator:", ch)
-
-
-# Input program
-text = input("Enter expression: ")
-lexical_analyzer(text)
+        print("{" + num + "} -> NUMBER")
+        continue
+    # MULTI-CHAR OPERATOR (==)
+    if i + 1 < n and code[i:i+2] in operators:
+        print("{" + code[i:i+2] + "} -> OPERATOR")
+        i += 2
+        continue
+    # SINGLE OPERATOR
+    if code[i] in operators:
+        print("{" + code[i] + "} -> OPERATOR")
+        i += 1
+        continue
+    # UNKNOWN
+    print(code[i], "-> UNKNOWN")
+    i += 1
