@@ -6,34 +6,40 @@ int yylex();
 void yyerror(char *s);
 %}
 
+%token DIGIT
+
+%left '+' '-'
+%left '*' '/'
+
 %%
-expr: expr '+' expr { printf("Addition\n"); }
-    | expr '-' expr { printf("Subtraction\n"); }
-    | expr '*' expr { printf("Multiplication\n"); }
-    | expr '/' expr { printf("Division\n"); }
-    | NUMBER
-    ;
-
-NUMBER: NUMBER DIGIT
-      | DIGIT
-      ;
-
-DIGIT: '0' | '1' | '2' | '3' | '4'
-     | '5' | '6' | '7' | '8' | '9'
+start: expr { printf("Result = %d\n", $1); }
      ;
+
+expr: expr '+' expr { $$ = $1 + $3; }
+    | expr '-' expr { $$ = $1 - $3; }
+    | expr '*' expr { $$ = $1 * $3; }
+    | expr '/' expr { $$ = $1 / $3; }
+    | DIGIT         { $$ = $1; }
+    ;
 %%
 
-int yylex(){
+int yylex() {
     int c = getchar();
-    if(isdigit(c)) return DIGIT;
-    return c;
+
+    if (isdigit(c)) {
+        yylval = c - '0';   // convert char → integer
+        return DIGIT;
+    }
+
+    return c; // + - * / or newline
 }
 
-int main(){
+int main() {
     printf("Enter expression: ");
     yyparse();
+    return 0;
 }
 
-void yyerror(char *s){
+void yyerror(char *s) {
     printf("Invalid expression\n");
 }
